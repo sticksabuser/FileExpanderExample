@@ -1,0 +1,39 @@
+plugins {
+    id 'java-library'
+    id 'project-report'
+    id 'groovy'
+    id 'idea'
+}
+
+group = 'com.test'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    jython
+}
+
+dependencies {
+    jython(group: 'org.python', name: 'jython-installer', version: '2.7.3')
+}
+
+tasks.register('copyJython') {
+    configure {
+        group = 'build'
+        description = 'Collect libraries to create distribution'
+    }
+    def pieDir = project.buildDir.toPath().resolve('distribution')
+    doFirst {
+        delete(pieDir)
+    }
+    doLast {
+        copy {
+            from configurations.jython
+            into pieDir
+        }
+    }
+    outputs.dir(pieDir)
+    outputs.upToDateWhen {false}
+}
